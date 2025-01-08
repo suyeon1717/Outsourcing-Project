@@ -85,7 +85,8 @@ public class OrderItemServiceImpl implements OrderItemService {
         responseDtoList,
         totalAmountSum,
         totalPriceSum,
-        savedOrder.getId()
+        savedOrder.getId(),
+        savedOrder.getOrderStatus()
     );
   }
 }
