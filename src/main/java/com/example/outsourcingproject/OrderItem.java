@@ -1,6 +1,7 @@
 package com.example.outsourcingproject;
 
 
+import com.example.outsourcingproject.temporary.Menu;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,13 +32,6 @@ public class OrderItem {
   )
   private Integer eachAmount;
 
-  @Comment("주문한 메뉴의 각 가격")
-  @Column(
-      name = "each_price",
-      nullable = false
-  )
-  private Integer eachPrice;
-
   @Comment("주문한 메뉴의 총 가격")
   @Column(
       name = "total_price",
@@ -45,17 +39,20 @@ public class OrderItem {
   )
   private Integer totalPrice;
 
-  // todo 메뉴 Id 추후 연관관계 설정 해야 함)
   @Comment("메뉴 식별자")
-  @Column(
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(
       name = "menu_id",
       nullable = false
   )
-  private Long menuId;
+  private Menu menu;
 
   @Comment("주문 식별자")
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_id", nullable = false)
+  @JoinColumn(
+      name = "order_id",
+      nullable = false
+  )
   private Order order;
 
   protected OrderItem() {
@@ -63,15 +60,13 @@ public class OrderItem {
 
   public OrderItem(
       Order order,
-      Long menuId,
-      Integer eachAmount,
-      Integer eachPrice
+      Menu menu,
+      Integer eachAmount
   ) {
     this.order = order;
-    this.menuId = menuId;
+    this.menu = menu;
     this.eachAmount = eachAmount;
-    this.eachPrice = eachPrice;
-    this.totalPrice = calculateTotalPrice(eachAmount, eachPrice);
+    this.totalPrice = calculateTotalPrice(eachAmount, menu.getPrice());
   }
 
   private Integer calculateTotalPrice(
