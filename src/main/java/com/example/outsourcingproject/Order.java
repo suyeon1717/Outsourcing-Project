@@ -30,8 +30,10 @@ public class Order extends BaseEntity {
   )
   private OrderStatus orderStatus;
 
-
-
   protected Order() {
+  }
+
+  public Order(OrderStatus orderStatus) {
+    this.orderStatus = orderStatus;
   }
 }
