@@ -81,6 +81,10 @@ public class OrderItemServiceImpl implements OrderItemService {
         .mapToInt(CreateOrderItemResponseDto::getTotalPrice)
         .sum();
 
+    savedOrder.updateTotals(totalAmountSum, totalPriceSum);
+
+    orderRepository.save(savedOrder);
+
     return new OrderItemWrapper(
         responseDtoList,
         totalAmountSum,

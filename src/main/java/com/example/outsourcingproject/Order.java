@@ -30,10 +30,32 @@ public class Order extends BaseEntity {
   )
   private OrderStatus orderStatus;
 
+  @Comment("주문 총 수량")
+  @Column(
+      name = "total_amount_sum",
+      nullable = false
+  )
+  private Integer totalAmountSum = 0;
+
+  @Comment("주문 총가격")
+  @Column(
+      name = "total_price_sum",
+      nullable = false
+  )
+  private Integer totalPriceSum = 0;
+
   protected Order() {
   }
 
   public Order(OrderStatus orderStatus) {
     this.orderStatus = orderStatus;
+  }
+
+  public void updateTotals(
+      Integer totalAmountSum,
+      Integer totalPriceSum
+  ) {
+    this.totalAmountSum = totalAmountSum;
+    this.totalPriceSum = totalPriceSum;
   }
 }
