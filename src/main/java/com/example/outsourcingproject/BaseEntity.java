@@ -16,30 +16,30 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-  // 주문 생성일
-  // 다른 생성일과 함께 쓸 수 있도록 '생성일'이라고 지음
-  @Comment("생성일")
-  @CreatedDate
-  @ColumnDefault("CURRENT_TIMESTAMP")
-  @Column(
-      name = "created_at",
-      nullable = false,
-      updatable = false,
-      columnDefinition = "TIMESTAMP"
-  )
-  private LocalDateTime createdAt;
+    // 주문 생성일
+    // 다른 생성일과 함께 쓸 수 있도록 '생성일'이라고 지음
+    @Comment("생성일")
+    @CreatedDate
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(
+        name = "created_at",
+        nullable = false,
+        updatable = false,
+        columnDefinition = "TIMESTAMP"
+    )
+    private LocalDateTime createdAt;
 
-  // 주문 상태 변경일
-  // 다른 생성일과 함께 쓸 수 있도록 '생성일'이라고 지음
-  @Comment("수정일")
-  @LastModifiedDate
-  @Column(
-      name = "updated_at",
-      nullable = false,
-      columnDefinition = "TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-  )
-  private LocalDateTime updatedAt;
+    // 주문 상태 변경일
+    // 다른 생성일과 함께 쓸 수 있도록 '생성일'이라고 지음
+    @Comment("수정일")
+    @LastModifiedDate
+    @Column(
+        name = "updated_at",
+        nullable = false,
+        columnDefinition = "TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+    )
+    private LocalDateTime updatedAt;
 
-  protected BaseEntity() {
-  }
+    protected BaseEntity() {
+    }
 }
