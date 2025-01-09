@@ -26,14 +26,19 @@ public class OrderServiceImpl implements OrderService {
             requestDto.getId(),
             OrderStatus.DELIVERED
         ).orElseThrow(
-            () -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND
-            )
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         ); // todo 배달 완료 제외한 주문 조회 및 없을 시 예외 처리
 
-        foundOrder.updateOrderStatus(
-            OrderStatus.of(requestDto.getOrderStatus())
-        );
+        OrderStatus nextStatus = foundOrder.getOrderStatus().moveToNextStatus();
+
+        boolean isInvalidStatusUpdateRequest = !nextStatus.equals(
+            OrderStatus.of(requestDto.getOrderStatus()));
+
+        if (isInvalidStatusUpdateRequest) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+
+        foundOrder.updateOrderStatus(nextStatus);
 
         return UpdateOrderResponseDto.toDto(foundOrder);
     }

@@ -25,4 +25,15 @@ public enum OrderStatus {
                 )
             ); // todo 상태 값이 없을 시 예외 처리
     }
+
+    public OrderStatus moveToNextStatus() {
+        return switch (this) {
+            case PENDING -> ACCEPTED;
+            case ACCEPTED -> DELIVERING;
+            case DELIVERING -> DELIVERED;
+            default -> throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST
+            ); // todo 정해진 순서에 맞지 않게 주문 상태 보낼 시 예외 처리
+        };
+    }
 }
