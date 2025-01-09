@@ -5,14 +5,14 @@ import lombok.Getter;
 @Getter
 public class CreateOrderItemRequestDto {
 
-  private final Long menuId;
-  private final Integer eachAmount;
+    private final Long menuId;
+    private final Integer eachAmount;
 
-  public CreateOrderItemRequestDto(
-      Long menuId,
-      Integer eachAmount
-  ) {
-    this.menuId = menuId;
-    this.eachAmount = eachAmount;
-  }
+    public CreateOrderItemRequestDto(
+        Long menuId,
+        Integer eachAmount
+    ) {
+        this.menuId = menuId;
+        this.eachAmount = eachAmount;
+    }
 }

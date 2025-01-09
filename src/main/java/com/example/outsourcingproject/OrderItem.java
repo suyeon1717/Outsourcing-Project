@@ -1,7 +1,6 @@
 package com.example.outsourcingproject;
 
 
-import com.example.outsourcingproject.temporary.Menu;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,60 +18,60 @@ import org.hibernate.annotations.Comment;
 @Getter
 public class OrderItem {
 
-  @Comment("주문 아이템 식별자")
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(columnDefinition = "BIGINT")
-  private Long id;
+    @Comment("주문 아이템 식별자")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "BIGINT")
+    private Long id;
 
-  @Comment("주문한 메뉴의 각 수량")
-  @Column(
-      name = "each_amount",
-      nullable = false
-  )
-  private Integer eachAmount;
+    @Comment("주문한 메뉴의 각 수량")
+    @Column(
+        name = "each_amount",
+        nullable = false
+    )
+    private Integer eachAmount;
 
-  @Comment("주문한 메뉴의 총 가격")
-  @Column(
-      name = "total_price",
-      nullable = false
-  )
-  private Integer totalPrice;
+    @Comment("주문한 메뉴의 총 가격")
+    @Column(
+        name = "total_price",
+        nullable = false
+    )
+    private Integer totalPrice;
 
-  @Comment("메뉴 식별자")
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "menu_id",
-      nullable = false
-  )
-  private Menu menu;
+    @Comment("메뉴 식별자")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "menu_id",
+        nullable = false
+    )
+    private Menu menu;
 
-  @Comment("주문 식별자")
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "order_id",
-      nullable = false
-  )
-  private Order order;
+    @Comment("주문 식별자")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "order_id",
+        nullable = false
+    )
+    private Order order;
 
-  protected OrderItem() {
-  }
+    protected OrderItem() {
+    }
 
-  public OrderItem(
-      Order order,
-      Menu menu,
-      Integer eachAmount
-  ) {
-    this.order = order;
-    this.menu = menu;
-    this.eachAmount = eachAmount;
-    this.totalPrice = calculateTotalPrice(eachAmount, menu.getPrice());
-  }
+    public OrderItem(
+        Order order,
+        Menu menu,
+        Integer eachAmount
+    ) {
+        this.order = order;
+        this.menu = menu;
+        this.eachAmount = eachAmount;
+        this.totalPrice = calculateTotalPrice(eachAmount, menu.getMenuPrice());
+    }
 
-  private Integer calculateTotalPrice(
-      Integer eachAmount,
-      Integer eachPrice
-  ) {
-    return eachPrice * eachAmount;
-  }
+    private Integer calculateTotalPrice(
+        Integer eachAmount,
+        Integer eachPrice
+    ) {
+        return eachPrice * eachAmount;
+    }
 }

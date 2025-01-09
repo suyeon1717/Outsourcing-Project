@@ -16,22 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class OrderItemController {
 
-  private final OrderItemServiceImpl orderItemService;
+    private final OrderItemServiceImpl orderItemService;
 
-  public OrderItemController(OrderItemServiceImpl orderItemService) {
-    this.orderItemService = orderItemService;
-  }
+    public OrderItemController(OrderItemServiceImpl orderItemService) {
+        this.orderItemService = orderItemService;
+    }
 
-  @PostMapping("/stores/{storeId}/orders")
-  public ResponseEntity<OrderItemWrapper> createOrderItem(
-      @PathVariable Long storeId,
-      @RequestBody List<CreateOrderItemRequestDto> requestDtoList
-  ) {
-    OrderItemWrapper responseDtoWrapper = orderItemService.createOrderItem(
-        storeId,
-        requestDtoList
-    );
+    @PostMapping("/stores/{storeId}/orders")
+    public ResponseEntity<OrderItemWrapper> createOrderItem(
+        @PathVariable Long storeId,
+        @RequestBody List<CreateOrderItemRequestDto> requestDtoList
+    ) {
+        OrderItemWrapper responseDtoWrapper = orderItemService.createOrderItem(
+            storeId,
+            requestDtoList
+        );
 
-    return new ResponseEntity<>(responseDtoWrapper, HttpStatus.CREATED);
-  }
+        return new ResponseEntity<>(responseDtoWrapper, HttpStatus.CREATED);
+    }
 }

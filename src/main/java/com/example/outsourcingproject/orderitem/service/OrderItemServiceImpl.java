@@ -1,26 +1,28 @@
 package com.example.outsourcingproject.orderitem.service;
 
+import com.example.outsourcingproject.Menu;
 import com.example.outsourcingproject.Order;
 import com.example.outsourcingproject.OrderItem;
 import com.example.outsourcingproject.OrderItemWrapper;
 import com.example.outsourcingproject.OrderStatus;
+import com.example.outsourcingproject.menu.repository.MenuRepository;
 import com.example.outsourcingproject.order.repository.OrderRepository;
 import com.example.outsourcingproject.orderitem.dto.request.CreateOrderItemRequestDto;
 import com.example.outsourcingproject.orderitem.dto.response.CreateOrderItemResponseDto;
 import com.example.outsourcingproject.orderitem.repository.OrderItemRepository;
-import com.example.outsourcingproject.temporary.Menu;
-import com.example.outsourcingproject.temporary.MenuRepository;
-import com.example.outsourcingproject.temporary.Store;
-import com.example.outsourcingproject.temporary.StoreRepository;
+import com.example.outsourcingproject.smallstores.Store;
+import com.example.outsourcingproject.smallstores.StoreRepository;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@RequiredArgsConstructor
 public class OrderItemServiceImpl implements OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
@@ -28,17 +30,6 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
 
-    public OrderItemServiceImpl(
-        OrderItemRepository orderItemRepository,
-        OrderRepository orderRepository,
-        MenuRepository menuRepository,
-        StoreRepository storeRepository
-    ) {
-        this.orderItemRepository = orderItemRepository;
-        this.orderRepository = orderRepository;
-        this.menuRepository = menuRepository;
-        this.storeRepository = storeRepository;
-    }
 
     @Transactional
     @Override
@@ -95,7 +86,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                         savedOrderItem.getId(),
                         foundMenu.getId(),
                         savedOrderItem.getEachAmount(),
-                        foundMenu.getPrice(),
+                        foundMenu.getMenuPrice(),
                         savedOrderItem.getTotalPrice()
                     );
                 }
