@@ -10,6 +10,9 @@ import com.example.outsourcingproject.orderitem.dto.response.CreateOrderItemResp
 import com.example.outsourcingproject.orderitem.repository.OrderItemRepository;
 import com.example.outsourcingproject.temporary.Menu;
 import com.example.outsourcingproject.temporary.MenuRepository;
+import com.example.outsourcingproject.temporary.Store;
+import com.example.outsourcingproject.temporary.StoreRepository;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,77 +23,107 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class OrderItemServiceImpl implements OrderItemService {
 
-  private final OrderItemRepository orderItemRepository;
-  private final OrderRepository orderRepository;
-  private final MenuRepository menuRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final OrderRepository orderRepository;
+    private final MenuRepository menuRepository;
+    private final StoreRepository storeRepository;
 
-  public OrderItemServiceImpl(
-      OrderItemRepository orderItemRepository,
-      OrderRepository orderRepository,
-      MenuRepository menuRepository
-  ) {
-    this.orderItemRepository = orderItemRepository;
-    this.orderRepository = orderRepository;
-    this.menuRepository = menuRepository;
-  }
+    public OrderItemServiceImpl(
+        OrderItemRepository orderItemRepository,
+        OrderRepository orderRepository,
+        MenuRepository menuRepository,
+        StoreRepository storeRepository
+    ) {
+        this.orderItemRepository = orderItemRepository;
+        this.orderRepository = orderRepository;
+        this.menuRepository = menuRepository;
+        this.storeRepository = storeRepository;
+    }
 
-  @Transactional
-  @Override
-  public OrderItemWrapper createOrderItem(
-      List<CreateOrderItemRequestDto> requestDtoList
-  ) {
+    @Transactional
+    @Override
+    public OrderItemWrapper createOrderItem(
+        Long storeId,
+        List<CreateOrderItemRequestDto> requestDtoList
+    ) {
 
-    Order orderToSave = new Order(OrderStatus.PENDING);
-    Order savedOrder = orderRepository.save(orderToSave);
+        Store foundStore = storeRepository.findById(storeId)
+            .orElseThrow(
+                () -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND
+                )
+            ); // todo 가게 없을 시 예외 처리 -> '가게가 폐업 상태일 때 예외 처리 필요'
 
-    List<CreateOrderItemResponseDto> responseDtoList = new ArrayList<>();
+        LocalTime timeToOrder = LocalTime.now();
+        boolean isBeforeOpensAt = timeToOrder.isBefore(foundStore.getOpensAt());
+        boolean isAfterClosesAt = timeToOrder.isAfter(foundStore.getClosesAt());
 
-    responseDtoList = requestDtoList.stream()
-        .map(requestDto -> {
+        if (isBeforeOpensAt || isAfterClosesAt) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST
+            );
+        } // todo 가게 오픈 시간 전이나 종료 시간 후 주문 시 예외 처리
 
-              Menu foundMenu = menuRepository.findById(requestDto.getMenuId())
-                  .orElseThrow(
-                      () -> new ResponseStatusException(
-                          HttpStatus.NOT_FOUND
-                      )
-                  ); // todo
+        Order orderToSave = new Order(
+            OrderStatus.PENDING,
+            foundStore
+        );
 
-              OrderItem orderItemToSave = new OrderItem(
-                  savedOrder,
-                  foundMenu,
-                  requestDto.getEachAmount()
-              );
+        Order savedOrder = orderRepository.save(orderToSave);
 
-              OrderItem savedOrderItem = orderItemRepository.save(orderItemToSave);
+        List<CreateOrderItemResponseDto> responseDtoList = new ArrayList<>();
 
-              return new CreateOrderItemResponseDto(
-                  savedOrderItem.getId(),
-                  foundMenu.getId(),
-                  savedOrderItem.getEachAmount(),
-                  foundMenu.getPrice(),
-                  savedOrderItem.getTotalPrice()
-              );
-            }
-        ).toList();
+        responseDtoList = requestDtoList.stream()
+            .map(requestDto -> {
 
-    Integer totalAmountSum = responseDtoList.stream()
-        .mapToInt(CreateOrderItemResponseDto::getEachAmount)
-        .sum();
+                    Menu foundMenu = menuRepository.findById(requestDto.getMenuId())
+                        .orElseThrow(
+                            () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND
+                            )
+                        ); // todo 메뉴가 없을 시 예외 처리
 
-    Integer totalPriceSum = responseDtoList.stream()
-        .mapToInt(CreateOrderItemResponseDto::getTotalPrice)
-        .sum();
+                    OrderItem orderItemToSave = new OrderItem(
+                        savedOrder,
+                        foundMenu,
+                        requestDto.getEachAmount()
+                    );
 
-    savedOrder.updateTotals(totalAmountSum, totalPriceSum);
+                    OrderItem savedOrderItem = orderItemRepository.save(orderItemToSave);
 
-    orderRepository.save(savedOrder);
+                    return new CreateOrderItemResponseDto(
+                        savedOrderItem.getId(),
+                        foundMenu.getId(),
+                        savedOrderItem.getEachAmount(),
+                        foundMenu.getPrice(),
+                        savedOrderItem.getTotalPrice()
+                    );
+                }
+            ).toList();
 
-    return new OrderItemWrapper(
-        responseDtoList,
-        totalAmountSum,
-        totalPriceSum,
-        savedOrder.getId(),
-        savedOrder.getOrderStatus()
-    );
-  }
+        Integer totalPriceSum = responseDtoList.stream()
+            .mapToInt(CreateOrderItemResponseDto::getTotalPrice)
+            .sum();
+
+        boolean isBelowMinimumPurchase = totalPriceSum < foundStore.getMinimumPurchase();
+
+        if (isBelowMinimumPurchase) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } // todo 최소 주문 금액보다 적으면 예외 처리
+
+        Integer totalAmountSum = responseDtoList.stream()
+            .mapToInt(CreateOrderItemResponseDto::getEachAmount)
+            .sum();
+
+        savedOrder.updateTotals(totalAmountSum, totalPriceSum);
+        orderRepository.save(savedOrder);
+
+        return new OrderItemWrapper(
+            responseDtoList,
+            totalAmountSum,
+            totalPriceSum,
+            savedOrder.getId(),
+            savedOrder.getOrderStatus()
+        );
+    }
 }

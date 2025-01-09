@@ -6,13 +6,14 @@ import com.example.outsourcingproject.orderitem.service.OrderItemServiceImpl;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/order-items")
+@RequestMapping
 public class OrderItemController {
 
   private final OrderItemServiceImpl orderItemService;
@@ -21,11 +22,15 @@ public class OrderItemController {
     this.orderItemService = orderItemService;
   }
 
-  @PostMapping
+  @PostMapping("/stores/{storeId}/orders")
   public ResponseEntity<OrderItemWrapper> createOrderItem(
+      @PathVariable Long storeId,
       @RequestBody List<CreateOrderItemRequestDto> requestDtoList
   ) {
-    OrderItemWrapper responseDtoWrapper = orderItemService.createOrderItem(requestDtoList);
+    OrderItemWrapper responseDtoWrapper = orderItemService.createOrderItem(
+        storeId,
+        requestDtoList
+    );
 
     return new ResponseEntity<>(responseDtoWrapper, HttpStatus.CREATED);
   }

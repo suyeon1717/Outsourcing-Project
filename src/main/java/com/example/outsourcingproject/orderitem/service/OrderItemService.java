@@ -6,5 +6,8 @@ import java.util.List;
 
 public interface OrderItemService {
 
-  OrderItemWrapper createOrderItem(List<CreateOrderItemRequestDto> requestDtoList);
+    OrderItemWrapper createOrderItem(
+        Long storeId,
+        List<CreateOrderItemRequestDto> requestDtoList
+    );
 }
