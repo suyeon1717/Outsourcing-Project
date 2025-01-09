@@ -1,6 +1,6 @@
 package com.example.outsourcingproject;
 
-import com.example.outsourcingproject.temporary.Store;
+import com.example.outsourcingproject.smallstores.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +14,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Entity
 @Table(name = "ORDERS")
@@ -75,7 +77,41 @@ public class Order extends BaseEntity {
         this.totalPriceSum = totalPriceSum;
     }
 
+    // 주문 상태를 변경하는 기능
     public void updateOrderStatus(OrderStatus orderStatus) {
+        validateStatusSequence(orderStatus);
         this.orderStatus = orderStatus;
+    }
+
+    // 주문 상태 변경 순서가 올바른지 검증하는 기능
+    private void validateStatusSequence(OrderStatus orderStatus) {
+
+        boolean isInvalidPendingTransition = !(orderStatus.equals(OrderStatus.ACCEPTED)
+            || orderStatus.equals(OrderStatus.CANCELED));
+
+        boolean isInvalidAcceptedTransition = !orderStatus.equals(OrderStatus.DELIVERING);
+
+        boolean isInvalidDeliveringTransition = !orderStatus.equals(OrderStatus.DELIVERED);
+
+        // !accepted이면 예외 던지기
+
+        // 끝난다는 걸 명확히 하고자 예외
+        switch (this.orderStatus) {
+            case PENDING:
+                if (isInvalidPendingTransition) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT);
+                } // todo
+                break;
+            case ACCEPTED:
+                if (isInvalidAcceptedTransition) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT);
+                } // todo
+                break;
+            case DELIVERING:
+                if (isInvalidDeliveringTransition) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT);
+                } // todo
+                break;
+        }
     }
 }

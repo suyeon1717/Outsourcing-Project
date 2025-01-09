@@ -1,6 +1,5 @@
 package com.example.outsourcingproject.order.dto.request;
 
-import com.example.outsourcingproject.OrderStatus;
 import lombok.Getter;
 
 @Getter

@@ -5,19 +5,17 @@ import com.example.outsourcingproject.OrderStatus;
 import com.example.outsourcingproject.order.dto.request.UpdateOrderRequestDto;
 import com.example.outsourcingproject.order.dto.response.UpdateOrderResponseDto;
 import com.example.outsourcingproject.order.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-
-    public OrderServiceImpl(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     @Transactional
     @Override
@@ -29,17 +27,10 @@ public class OrderServiceImpl implements OrderService {
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         ); // todo 배달 완료 제외한 주문 조회 및 없을 시 예외 처리
 
-        OrderStatus nextStatus = foundOrder.getOrderStatus().moveToNextStatus();
-
-        boolean isInvalidStatusUpdateRequest = !nextStatus.equals(
-            OrderStatus.of(requestDto.getOrderStatus()));
-
-        if (isInvalidStatusUpdateRequest) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-        }
+        OrderStatus nextStatus = OrderStatus.of(requestDto.getOrderStatus());
 
         foundOrder.updateOrderStatus(nextStatus);
 
-        return UpdateOrderResponseDto.toDto(foundOrder);
+        return new UpdateOrderResponseDto(foundOrder.getOrderStatus());
     }
 }

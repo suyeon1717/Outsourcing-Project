@@ -13,9 +13,4 @@ public class UpdateOrderResponseDto {
         OrderStatus updatedOrderStatus) {
         this.updatedOrderStatus = updatedOrderStatus;
     }
-
-    public static UpdateOrderResponseDto toDto(Order order) {
-        return new UpdateOrderResponseDto(order.getOrderStatus()
-        );
-    }
 }
