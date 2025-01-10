@@ -1,5 +1,6 @@
 package com.example.outsourcingproject;
 
+import com.example.outsourcingproject.smallstores.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
