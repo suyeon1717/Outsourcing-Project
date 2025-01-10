@@ -28,7 +28,6 @@ public class StoreServiceImpl implements StoreService {
         CreateStoreRequestDto requestDto,
         String token
     ) {
-
         String storeName = requestDto.getStoreName();
         String storeAddress = requestDto.getStoreAddress();
         String storeTelephone = requestDto.getStoreTelephone();
@@ -45,20 +44,14 @@ public class StoreServiceImpl implements StoreService {
         Long ownerId = owner.getId();
 
         // StoreEntity 생성 (가게 정보를 엔티티로 변환)
-        StoreEntity store = new StoreEntity();
+        StoreEntity store = new StoreEntity(
+            ownerId, storeName, storeAddress, storeTelephone,
+            minimumPurchase,opensAt, closesAt
+        );
 
-        // todo 세터라서 고쳐야함
-        store.setStoreName(storeName);
-        store.setStoreAddress(storeAddress);
-        store.setStoreTelephone(storeTelephone);
-        store.setMinimumPurchase(minimumPurchase);
-        store.setOpensAt(opensAt);
-        store.setClosesAt(closesAt);
-        store.setId(ownerId);
-
-
-        StoreEntity savedStore = storeRepository.save(store);
         // 데이터베이스에 가게 저장
+        StoreEntity savedStore = storeRepository.save(store);
+
         return new CreateStoreResponseDto(
             savedStore.getId(),
             savedStore.getStoreName(),
