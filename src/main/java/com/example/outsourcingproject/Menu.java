@@ -1,6 +1,5 @@
 package com.example.outsourcingproject;
 
-import com.example.outsourcingproject.smallstores.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -67,5 +66,21 @@ public class Menu extends BaseEntity {
         this.menuPrice = menuPrice;
         this.menuInfo = menuInfo;
         this.store = store;
+    }
+
+    public void update(
+        String menuName,
+        Integer menuPrice,
+        String menuInfo
+    ) {
+        if (menuName != null) {
+            this.menuName = menuName;
+        }
+        if (menuPrice != null) {
+            this.menuPrice = menuPrice;
+        }
+        if (menuInfo != null) {
+            this.menuInfo = menuInfo;
+        }
     }
 }
