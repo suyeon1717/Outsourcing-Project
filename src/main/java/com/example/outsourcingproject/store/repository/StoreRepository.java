@@ -7,5 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
     List<Store> findByStoreNameContaining(String storeName);
+
+
+    void findByStoreName(Long storeId, String storeName, String address, String storeTelephone, Integer minimumPurchase, Integer opensAt, Integer closesAt);
 }
+
 

@@ -62,4 +62,6 @@ public class Store extends BaseEntity {
         this.deletedAt = null;
     }
 
+    public void update(String storeName, String storeAddress, String storeTelephone, Integer minimumPurchase, LocalTime opensAt, LocalTime closesAt) {
+    }
 }

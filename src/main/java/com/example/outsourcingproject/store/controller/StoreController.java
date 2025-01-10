@@ -1,18 +1,18 @@
 package com.example.outsourcingproject.store.controller;
 
-import com.example.outsourcingproject.entity.Store;
 import com.example.outsourcingproject.store.dto.request.CreateStoreRequestDto;
-import com.example.outsourcingproject.store.dto.request.StoreUpdateRequestDto;
+import com.example.outsourcingproject.store.dto.request.UpdateStoreRequestDto;
 import com.example.outsourcingproject.store.dto.response.CreateStoreResponseDto;
 import com.example.outsourcingproject.store.dto.response.StoreNameResponseDto;
 import com.example.outsourcingproject.store.dto.response.StoreResponseDto;
+import com.example.outsourcingproject.store.dto.response.UpdateStoreResponseDto;
+import com.example.outsourcingproject.store.repository.StoreRepository;
 import com.example.outsourcingproject.store.service.StoreService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreController {
 
     private final StoreService storeService;
+    private final StoreRepository storeRepository;
 
     // 가게 생성
     @PostMapping
@@ -67,33 +68,28 @@ public class StoreController {
     }
 
     // 가게 수정
-    @PatchMapping
-    public ResponseEntity<StoreResponseDto> updateStore(
+    @PatchMapping("/stores/{storeId}")
+    public ResponseEntity<UpdateStoreResponseDto> updateStore(
         @PathVariable Long storeId,
-        @RequestBody StoreUpdateRequestDto requestDto //todo @Valid 유효성 검사
+        @RequestBody UpdateStoreRequestDto requestDto
     ) {
-        StoreResponseDto storeResponseDto = storeService.updateStore( //todo 수연. 제가 하던 방식으로 적었습니다
-            requestDto.getStoreName(),
-            requestDto.getStoreAddress(),
-            requestDto.getStoreTelephone(),
-            requestDto.getMinimumPurchase(),
-            requestDto.getOpensAt(),
-            requestDto.getClosesAt()
-        );
+
+        UpdateStoreResponseDto storeResponseDto = storeService.updateStore(storeId,requestDto);
 
         return new ResponseEntity<>(storeResponseDto, HttpStatus.OK);
     }
 
-    // 가게 폐업
-    @DeleteMapping
-    public ResponseEntity<Void> deleteStore(
-        @PathVariable Long storeId
-        //todo 폐업시 비밀번호 확인?
-    ){
-        storeService.deleteStore(storeId);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+//
+//    // 가게 폐업 : 소프트딜리트
+//    @DeleteMapping
+//    public ResponseEntity<Void> deleteStore(
+//        @PathVariable Long storeId
+//        //todo 폐업시 비밀번호 확인?
+//    ){
+//        storeService.deleteStore(storeId);
+//
+//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//    }
 
 
 }

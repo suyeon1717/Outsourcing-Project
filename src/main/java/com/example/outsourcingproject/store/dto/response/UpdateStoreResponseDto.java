@@ -1,11 +1,13 @@
-package com.example.outsourcingproject.store.dto.request;
+package com.example.outsourcingproject.store.dto.response;
+
 
 import java.time.LocalTime;
 import lombok.Getter;
 
 @Getter
-public class StoreUpdateRequestDto {
+public class UpdateStoreResponseDto {
 
+    private final Long id;
     private final String storeName;
     private final String storeAddress;
     private final String storeTelephone;
@@ -13,7 +15,8 @@ public class StoreUpdateRequestDto {
     private final LocalTime opensAt;
     private final LocalTime closesAt;
 
-    public StoreUpdateRequestDto(
+    public UpdateStoreResponseDto(
+        Long id,
         String storeName,
         String storeAddress,
         String storeTelephone,
@@ -21,6 +24,7 @@ public class StoreUpdateRequestDto {
         LocalTime opensAt,
         LocalTime closesAt
     ) {
+        this.id = id;
         this.storeName = storeName;
         this.storeAddress = storeAddress;
         this.storeTelephone = storeTelephone;
@@ -28,5 +32,4 @@ public class StoreUpdateRequestDto {
         this.opensAt = opensAt;
         this.closesAt = closesAt;
     }
-
 }
